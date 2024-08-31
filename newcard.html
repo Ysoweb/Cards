@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توليد بطاقات وهمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(to right, #243B55, #141E30);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            direction: rtl;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            color: #00C9FF;
+            text-align: center;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        form {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: right;
+            width: 100%;
+            color: #00C9FF;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #00C9FF;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        input[type="text"]::placeholder, input[type="number"]::placeholder {
+            color: #ddd;
+        }
+
+        button {
+            background-color: #00C9FF;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        button:hover {
+            background-color: #00A0D1;
+            transform: translateY(-3px);
+        }
+
+        #copyButton, #downloadButton, #csvButton, #resetButton, #devInfoButton {
+            display: none;
+            margin-top: 15px;
+        }
+
+        #results {
+            margin-top: 25px;
+            width: 100%;
+            text-align: center;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background: rgba(0, 0, 0, 0.6);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+            color: #00C9FF;
+            font-weight: bold;
+            white-space: nowrap;
+            font-family: monospace;
+            font-size: 1.1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .copy-button {
+            background: #00C9FF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #00A0D1;
+        }
+
+        .notification {
+            margin-top: 25px;
+            display: none;
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+        }
+
+        .dev-info {
+            margin-top: 15px;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: #00C9FF;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <button id="devInfoButton" onclick="showDevInfo()">معلومات المطور</button>
+    <div id="devInfo" class="dev-info">
+        <p>ازيك يا برنس، أنا حولت أطور الموقع البسيط ده عشان يسعدك في توليد بطاقات وتشحن بيها بشكل مضمون.</p>
+        <p>اسمي مصطفى</p>
+        <p>أو mustapha / @lilzr</p>
+    </div>
+    <h1>توليد بطاقات ائتمان وهمية</h1>
+    <form id="cardForm">
+        <label for="bin">BIN:</label>
+        <input type="text" id="bin" name="bin" required placeholder="أدخل BIN (مثلاً، 123456)">
+        <label for="count">عدد البطاقات:</label>
+        <input type="number" id="count" name="count" required placeholder="أدخل عدد البطاقات">
+        <button type="submit">توليد</button>
+    </form>
+    <button id="copyButton" onclick="copyToClipboard()">نسخ البطاقات</button>
+    <button id="downloadButton" onclick="downloadTxtFile()">تحميل ملف TXT</button>
+    <button id="csvButton" onclick="downloadCsvFile()">تحميل ملف CSV</button>
+    <button id="resetButton" onclick="resetForm()">إعادة تعيين</button>
+    <div id="results"></div>
+    <div id="notification" class="notification"></div>
+
+    <script>
+        function luhnAlgorithm(cardNumber) {
+            const digits = cardNumber.split('').map(Number);
+            const oddDigits = digits.filter((_, idx) => idx % 2 === digits.length % 2);
+            const evenDigits = digits.filter((_, idx) => idx % 2 !== digits.length % 2);
+            const checksum = [...oddDigits, ...evenDigits.map(d => d * 2)]
+                .flatMap(d => d > 9 ? [d - 9] : [d])
+                .reduce((sum, d) => sum + d, 0);
+            return checksum % 10 === 0;
+        }
+
+        function generateCard(bin) {
+            let cardNumber = bin;
+            while (cardNumber.length < 15) {
+                cardNumber += Math.floor(Math.random() * 10);
+            }
+            let checkDigit = (10 - luhnAlgorithm(cardNumber + '0')) % 10;
+            return cardNumber + checkDigit;
+        }
+
+        function generateExpiryDate() {
+            const date = new Date();
+            const month = ("0" + (date.getMonth() + 1)).slice(-2);
+            const year = date.getFullYear() + Math.floor(Math.random() * 4) + 1;
+            return `${month}/${year}`;
+        }
+
+        function generateCCV() {
+            return `${Math.floor(Math.random() * 900 + 100)}`;
+        }
+
+        function copyToClipboard() {
+            const resultsText = document.getElementById('results').innerText;
+            const textArea = document.createElement('textarea');
+            textArea.value = resultsText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotification('تم نسخ البطاقات إلى الحافظة!', false);
+        }
+
+        function downloadTxtFile() {
+            const resultsText = document.getElementById('results').innerText;
+            if (resultsText.trim() === '') {
+                showNotification('لا توجد بطاقات لتتمكن من التحميل!', true);
+                return;
+            }const element = document.createElement('a');
+            const file = new Blob([resultsText], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = 'بطاقات_الائتمان.txt';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            showNotification('تم تحميل الملف!', false);
+        }
+
+        function downloadCsvFile() {
+            const results = document.getElementById('results').querySelectorAll('li');
+            if (results.length === 0) {
+                showNotification('لا توجد بطاقات لتتمكن من التحميل!', true);
+                return;
+            }
+
+            const csvContent = "data:text/csv;charset=utf-8,"
+                + Array.from(results)
+                    .map(li => li.innerText.replace('|', ','))
+                    .join('\n');
+                    
+            const encodedUri = encodeURI(csvContent);
+            const element = document.createElement('a');
+            element.setAttribute('href', encodedUri);
+            element.setAttribute('download', 'بطاقات_الائتمان.csv');
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            showNotification('تم تحميل الملف CSV!', false);
+        }
+
+        function resetForm() {
+            document.getElementById('cardForm').reset();
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('copyButton').style.display = 'none';
+            document.getElementById('downloadButton').style.display = 'none';
+            document.getElementById('csvButton').style.display = 'none';
+            document.getElementById('resetButton').style.display = 'none';
+        }
+
+        function showNotification(message, isError) {
+            const notification = document.getElementById('notification');
+            notification.innerText = message;
+            notification.style.backgroundColor = isError ? '#e74c3c' : '#4CAF50';
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        function showDevInfo() {
+            const devInfo = document.getElementById('devInfo');
+            devInfo.style.display = devInfo.style.display === 'block' ? 'none' : 'block';
+        }
+
+        document.getElementById('cardForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const bin = document.getElementById('bin').value;
+            const count = document.getElementById('count').value;
+            if (bin.length !== 6 || isNaN(bin)) {
+                showNotification('يجب أن يحتوي BIN على 6 أرقام فقط!', true);
+                return;
+            }
+            const results = [];
+            for (let i = 0; i < count; i++) {
+                const cardNumber = generateCard(bin);
+                const expiryDate = generateExpiryDate();
+                const ccv = generateCCV();
+                results.push(`${cardNumber}|${expiryDate.replace('/', '|')}|${ccv}`);
+            }
+            document.getElementById('results').innerHTML = `<ul>${results.map(card => `
+                <li>${card}
+                    <button class="copy-button" onclick="copyCardToClipboard('${card}')">نسخ</button>
+                </li>`).join('')}</ul>`;
+            document.getElementById('copyButton').style.display = 'block';
+            document.getElementById('downloadButton').style.display = 'block';
+            document.getElementById('csvButton').style.display = 'block';
+            document.getElementById('resetButton').style.display = 'block';
+            showNotification('تم توليد البطاقات بنجاح!', false);
+        });
+
+        function copyCardToClipboard(card) {
+            const textArea = document.createElement('textarea');
+            textArea.value = card;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotification('تم نسخ البطاقة إلى الحافظة!', false);
+        }
+    </script>
+</body>
+</html>
